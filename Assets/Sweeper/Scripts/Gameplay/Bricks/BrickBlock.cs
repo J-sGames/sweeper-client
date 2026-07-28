@@ -19,9 +19,12 @@ namespace Sweeper.Gameplay.Bricks
         public int HitsToDestroy => hitsToDestroy;
         public int RemainingHits => _remainingHits;
 
-        public void Configure(Vector2 size, Color brickColor)
+        public void Configure(Vector2 size, Color brickColor, int requiredHits)
         {
             color = brickColor;
+            hitsToDestroy = Mathf.Max(1, requiredHits);
+            _remainingHits = hitsToDestroy;
+            _destroyRequested = false;
             transform.localScale = new Vector3(size.x, size.y, 1f);
             RefreshVisual();
         }

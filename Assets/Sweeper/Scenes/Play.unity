@@ -253,7 +253,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ballPrefab: {fileID: 11400000, guid: 2a17783532214c838ac0f938b24df1ea, type: 3}
-  ballCount: 5
+  ballCount: 1
   ballSpacing: 0.55
   ballDiameter: 0.42
   minimumSpeed: 8
@@ -272,13 +272,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Sweeper.Gameplay.Bricks.BrickRowSpawner
   playfield: {fileID: 1005}
   brickPrefab: {fileID: 11400000, guid: f538048309444bb48296cb72e547d87a, type: 3}
+  ballCountPickupPrefab: {fileID: 11400000, guid: b387105dd3fe428a85791707e29e9e46, type: 3}
   blockWidth: 1.7
   blockHeight: 1
   horizontalGap: 0.1
   verticalGap: 0.1
   topPadding: 0.65
   previewRowCount: 3
+  brickFillProbability: 0.7
+  minimumBricksPerRow: 2
   blockColor: {r: 0.95, g: 0.35, b: 0.2, a: 1}
+  spawnOnStart: 1
+  rewardPlacementAttempts: 24
+  rewardBottomClearance: 1.2
 --- !u!1 &144512118
 GameObject:
   m_ObjectHideFlags: 0

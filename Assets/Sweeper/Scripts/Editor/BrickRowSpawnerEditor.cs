@@ -69,6 +69,15 @@ namespace Sweeper.Editor
                         "Assets/Sweeper/Prefabs/Bricks/Brick.prefab");
                 serializedObject.ApplyModifiedProperties();
             }
+            SerializedProperty pickupProperty =
+                serializedObject.FindProperty("ballCountPickupPrefab");
+            if (pickupProperty.objectReferenceValue == null)
+            {
+                pickupProperty.objectReferenceValue =
+                    AssetDatabase.LoadAssetAtPath<BallCountPickup>(
+                        "Assets/Sweeper/Prefabs/Bricks/BallCountPickup.prefab");
+                serializedObject.ApplyModifiedProperties();
+            }
 
             DrawDefaultInspector();
             EditorGUILayout.Space(10f);

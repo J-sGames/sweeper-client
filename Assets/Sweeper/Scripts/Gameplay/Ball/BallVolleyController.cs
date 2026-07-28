@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Sweeper.Input;
 using UnityEngine;
@@ -29,11 +30,19 @@ namespace Sweeper.Gameplay.Ball
         private float _scheduledSpeed;
         private double _volleyStartTime;
         private double _launchInterval;
+        private int _pendingAdditionalBalls;
 
         public bool CanLaunch => !_isVolleyActive;
         public int BallCount => ballCount;
         public float BallSpacing => ballSpacing;
         public Vector2 LaunchPosition => _launchPosition;
+        public int PendingAdditionalBalls => _pendingAdditionalBalls;
+        public event Action VolleyCompleted;
+
+        public void QueueAdditionalBalls(int amount)
+        {
+            _pendingAdditionalBalls += Mathf.Max(0, amount);
+        }
 
         public void Configure(SwipeLaunchInput input, Camera playCamera, Vector2 initialLaunchPosition)
         {
@@ -126,6 +135,15 @@ namespace Sweeper.Gameplay.Ball
             for (int index = 0; index < ballCount; index++)
                 _balls[index].StopAt(_launchPosition);
             _isVolleyActive = false;
+
+            if (_pendingAdditionalBalls > 0)
+            {
+                ballCount += _pendingAdditionalBalls;
+                _pendingAdditionalBalls = 0;
+                EnsureBallCount();
+            }
+
+            VolleyCompleted?.Invoke();
         }
 
         private void EnsureBallCount()

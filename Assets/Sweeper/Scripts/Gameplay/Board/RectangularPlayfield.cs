@@ -26,6 +26,9 @@ namespace Sweeper.Gameplay.Board
             new(
                 fieldCenter.x,
                 fieldCenter.y - FieldSize.y * .5f + returnZoneHeight + launchClearance);
+        public float InnerLeft => fieldCenter.x - FieldWidth * .5f + wallThickness;
+        public float InnerRight => fieldCenter.x + FieldWidth * .5f - wallThickness;
+        public float InnerTop => fieldCenter.y + FieldSize.y * .5f - wallThickness;
 
         private void Start()
         {

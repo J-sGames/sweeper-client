@@ -8,10 +8,16 @@ namespace Sweeper.Gameplay.Bricks
     {
         private static Sprite _previewSprite;
         private static Font _runtimeFont;
+        private static AudioClip _generatedDestructionSound;
 
         [SerializeField] private Color color = new(.95f, .35f, .2f, 1f);
         [SerializeField, Min(1)] private int hitsToDestroy = 1;
         [SerializeField] private TextMesh hitCountText;
+
+        [Header("Destruction Audio")]
+        [SerializeField] private AudioClip destructionSound;
+        [SerializeField, Range(0f, 1f)] private float destructionVolume = .75f;
+        [SerializeField, Range(.5f, 2f)] private float destructionPitch = 1f;
 
         private int _remainingHits;
         private bool _destroyRequested;
@@ -58,6 +64,12 @@ namespace Sweeper.Gameplay.Bricks
             }
 
             _destroyRequested = true;
+            BallCollisionAudioPool.Play(
+                destructionSound != null
+                    ? destructionSound
+                    : GeneratedDestructionSound,
+                destructionVolume,
+                destructionPitch);
             Destroy(gameObject);
         }
 
@@ -127,6 +139,45 @@ namespace Sweeper.Gameplay.Bricks
                 _previewSprite.name = "Brick Preview Sprite";
                 _previewSprite.hideFlags = HideFlags.HideAndDontSave;
                 return _previewSprite;
+            }
+        }
+
+        private static AudioClip GeneratedDestructionSound
+        {
+            get
+            {
+                if (_generatedDestructionSound != null)
+                    return _generatedDestructionSound;
+
+                const int sampleRate = 44100;
+                const float duration = .12f;
+                int sampleCount = Mathf.CeilToInt(sampleRate * duration);
+                float[] samples = new float[sampleCount];
+                uint noiseState = 2463534242u;
+
+                for (int index = 0; index < sampleCount; index++)
+                {
+                    float time = index / (float)sampleRate;
+                    float progress = index / (float)sampleCount;
+                    float envelope = Mathf.Pow(1f - progress, 3f);
+                    float frequency = Mathf.Lerp(900f, 180f, progress);
+                    float crack = Mathf.Sin(2f * Mathf.PI * frequency * time);
+
+                    noiseState ^= noiseState << 13;
+                    noiseState ^= noiseState >> 17;
+                    noiseState ^= noiseState << 5;
+                    float noise = (noiseState / (float)uint.MaxValue) * 2f - 1f;
+                    samples[index] = (crack * .45f + noise * .55f) * envelope * .7f;
+                }
+
+                _generatedDestructionSound = AudioClip.Create(
+                    "Generated Brick Destruction",
+                    sampleCount,
+                    1,
+                    sampleRate,
+                    false);
+                _generatedDestructionSound.SetData(samples, 0);
+                return _generatedDestructionSound;
             }
         }
     }

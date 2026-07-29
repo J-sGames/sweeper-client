@@ -135,6 +135,7 @@ GameObject:
   - component: {fileID: 1006}
   - component: {fileID: 1007}
   - component: {fileID: 1008}
+  - component: {fileID: 1009}
   m_Layer: 0
   m_Name: Play Scene
   m_TagString: Untagged
@@ -286,6 +287,26 @@ MonoBehaviour:
   gameOverLineColor: {r: 1, g: 0.2, b: 0.2, a: 0.9}
   rewardPlacementAttempts: 24
   rewardBottomClearance: 1.2
+--- !u!114 &1009
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f4a98cdcf254d7e9bb62a9f03177fa7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Sweeper.Gameplay.Ball.AimDirectionArrow
+  input: {fileID: 1003}
+  volley: {fileID: 1007}
+  arrowSprite: {fileID: -765150924802650856, guid: 59e74c8a925d8a045bb6ccdda0aef7e1, type: 3}
+  distanceFromLaunchPosition: 0
+  arrowScale: 1
+  spriteAngleOffset: -90
+  arrowColor: {r: 1, g: 1, b: 1, a: 0.9}
+  invalidDirectionColor: {r: 1, g: 0.15, b: 0.15, a: 0.95}
 --- !u!1 &144512118
 GameObject:
   m_ObjectHideFlags: 0

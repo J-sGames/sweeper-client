@@ -155,6 +155,9 @@ MonoBehaviour:
   color: {r: 1, g: 1, b: 1, a: 1}
   hitsToDestroy: 1
   hitCountText: {fileID: 10200000}
+  destructionSound: {fileID: 8300000, guid: dc7b290e5be5a6142a464bc05f668df7, type: 3}
+  destructionVolume: 0.75
+  destructionPitch: 1
 --- !u!1 &100001
 GameObject:
   m_ObjectHideFlags: 0

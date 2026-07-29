@@ -85,6 +85,9 @@ namespace Sweeper.Gameplay.Board
             CreateWall("Top Wall",
                 new Vector2(center.x, max.y - wallThickness * .5f),
                 new Vector2(size.x, wallThickness));
+            CreateWall("Bottom Wall",
+                new Vector2(center.x, min.y + wallThickness * .5f),
+                new Vector2(size.x, wallThickness));
 
             GameObject returnZone = CreateVisual("Ball Return Zone",
                 new Vector2(center.x, min.y + returnZoneHeight * .5f),
@@ -148,6 +151,9 @@ namespace Sweeper.Gameplay.Board
                 new Vector2(wallThickness, size.y));
             Gizmos.DrawCube(
                 new Vector2(center.x, max.y - wallThickness * .5f),
+                new Vector2(size.x, wallThickness));
+            Gizmos.DrawCube(
+                new Vector2(center.x, min.y + wallThickness * .5f),
                 new Vector2(size.x, wallThickness));
 
             Gizmos.color = returnZoneColor;

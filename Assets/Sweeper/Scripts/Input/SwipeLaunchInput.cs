@@ -23,6 +23,12 @@ namespace Sweeper.Input
 
         public bool IsDragging { get; private set; }
         public SwipeSnapshot Current { get; private set; }
+        public float MinimumUpwardDirection => minimumUpwardDirection;
+
+        public bool IsDirectionLaunchable(Vector2 direction)
+        {
+            return direction.y >= minimumUpwardDirection;
+        }
 
         private int _activeTouchId = -1;
         private Vector2 _startPosition;
@@ -102,7 +108,7 @@ namespace Sweeper.Input
             _activeTouchId = -1;
 
             if (Current.NormalizedDistance >= minimumSwipe &&
-                Current.Direction.y >= minimumUpwardDirection)
+                IsDirectionLaunchable(Current.Direction))
                 SwipeReleased?.Invoke(Current);
             else
                 SwipeCancelled?.Invoke();

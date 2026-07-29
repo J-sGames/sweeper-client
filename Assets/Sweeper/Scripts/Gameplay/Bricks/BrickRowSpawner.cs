@@ -301,7 +301,9 @@ namespace Sweeper.Gameplay.Bricks
                 BallCountPickup pickup = CreatePickup(parent);
                 pickup.name = "Ball Reward +1";
                 pickup.transform.position = position;
-                pickup.Configure(diameter);
+                pickup.Configure(
+                    diameter,
+                    playfield.InitialLaunchPosition.y + radius);
                 return;
             }
 

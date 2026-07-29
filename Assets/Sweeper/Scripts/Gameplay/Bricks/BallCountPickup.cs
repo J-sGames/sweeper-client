@@ -18,10 +18,12 @@ namespace Sweeper.Gameplay.Bricks
 
         private BallVolleyController _volley;
         private bool _collected;
+        private float _minimumCenterY = float.NegativeInfinity;
 
-        public void Configure(float diameter)
+        public void Configure(float diameter, float minimumCenterY)
         {
             transform.localScale = Vector3.one * diameter;
+            _minimumCenterY = minimumCenterY;
             RefreshVisual();
         }
 
@@ -51,6 +53,12 @@ namespace Sweeper.Gameplay.Bricks
                 collectionVolume,
                 collectionPitch);
             Destroy(gameObject);
+        }
+
+        private void Update()
+        {
+            if (!_collected && transform.position.y < _minimumCenterY)
+                Destroy(gameObject);
         }
 
         private void RefreshVisual()

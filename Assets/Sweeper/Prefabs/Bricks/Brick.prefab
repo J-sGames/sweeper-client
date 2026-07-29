@@ -158,6 +158,13 @@ MonoBehaviour:
   destructionSound: {fileID: 8300000, guid: dc7b290e5be5a6142a464bc05f668df7, type: 3}
   destructionVolume: 0.75
   destructionPitch: 1
+  impactShakeDuration: 0.12
+  impactShakeIntensity: 0.025
+  destructionShakeDuration: 0.2
+  destructionShakeIntensity: 0.12
+  referenceBallSpeed: 12
+  intensityGrowthPerCollision: 0.08
+  maximumShakeMultiplier: 3
 --- !u!1 &100001
 GameObject:
   m_ObjectHideFlags: 0

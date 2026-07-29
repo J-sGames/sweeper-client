@@ -35,6 +35,7 @@ namespace Sweeper.Gameplay.Ball
         private int _launchCount;
 
         public bool CanLaunch => _isGameplayEnabled && !_isVolleyActive;
+        public IReadOnlyList<BallLauncher> Balls => _balls;
         public int LaunchCount => _launchCount;
         public int BallCount => ballCount;
         public float BallSpacing => ballSpacing;
@@ -74,6 +75,12 @@ namespace Sweeper.Gameplay.Ball
         {
             if (_input != null)
                 _input.SwipeReleased -= HandleSwipeReleased;
+
+            ApplyToAllBalls(ball =>
+            {
+                if (ball != null)
+                    ball.ReturnRequested -= HandleBallReturnRequested;
+            });
         }
 
         private void HandleSwipeReleased(SwipeSnapshot swipe)
@@ -135,19 +142,15 @@ namespace Sweeper.Gameplay.Ball
                 return;
 
             if (_returnedCount == 0)
-                _nextLaunchPosition = new Vector2(returnPosition.x, _launchPosition.y);
+                _nextLaunchPosition = returnPosition;
 
-            ball.StopAt(_nextLaunchPosition);
+            ball.StopAt(returnPosition);
             _returnedCount++;
 
             if (_returnedCount < ballCount)
                 return;
 
             _launchPosition = _nextLaunchPosition;
-            for (int index = 0; index < ballCount; index++)
-                _balls[index].StopAt(_launchPosition);
-            _isVolleyActive = false;
-
             if (_pendingAdditionalBalls > 0)
             {
                 ballCount += _pendingAdditionalBalls;
@@ -155,6 +158,10 @@ namespace Sweeper.Gameplay.Ball
                 EnsureBallCount();
             }
 
+            ResetAllBallsAt(_launchPosition);
+
+            // CanLaunch becomes true only after every ball is reset.
+            _isVolleyActive = false;
             VolleyCompleted?.Invoke();
         }
 
@@ -172,6 +179,25 @@ namespace Sweeper.Gameplay.Ball
                 if (shouldBeActive && !_balls[index].IsInFlight)
                     _balls[index].StopAt(_launchPosition);
             }
+        }
+
+        private void ResetAllBallsAt(Vector2 position)
+        {
+            ApplyToAllBalls(ball =>
+            {
+                if (ball == null)
+                    return;
+
+                ball.gameObject.SetActive(true);
+                ball.StopAt(position);
+            });
+            Physics2D.SyncTransforms();
+        }
+
+        private void ApplyToAllBalls(Action<BallLauncher> operation)
+        {
+            for (int index = 0; index < _balls.Count; index++)
+                operation(_balls[index]);
         }
 
         private BallLauncher CreateBall(int index)

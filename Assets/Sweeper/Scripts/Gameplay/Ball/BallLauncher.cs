@@ -32,6 +32,13 @@ namespace Sweeper.Gameplay.Ball
         public Vector2 LaunchWorldPosition => _launchWorldPosition;
         public bool IsInFlight { get; private set; }
         public Vector2 Velocity => _body == null ? Vector2.zero : _body.linearVelocity;
+        public int BrickCollisionCount { get; private set; }
+
+        public int RegisterBrickCollision()
+        {
+            BrickCollisionCount++;
+            return BrickCollisionCount;
+        }
 
         public void Configure(Camera playCamera, Vector2 initialLaunchPosition, float ballDiameter)
         {
@@ -86,6 +93,7 @@ namespace Sweeper.Gameplay.Ball
             _body.position = origin;
             _body.linearVelocity = direction.normalized * speed;
             _flightSpeed = Mathf.Max(.01f, speed);
+            BrickCollisionCount = 0;
             _collider.enabled = true;
             IsInFlight = true;
         }
@@ -123,9 +131,10 @@ namespace Sweeper.Gameplay.Ball
             _launchWorldPosition = position;
             _body.linearVelocity = Vector2.zero;
             _body.angularVelocity = 0f;
-            _body.position = position;
             _collider.enabled = false;
             _body.simulated = false;
+            _body.position = position;
+            transform.position = position;
             IsInFlight = false;
             enabled = false;
         }

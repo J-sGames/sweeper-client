@@ -1,4 +1,5 @@
 using Sweeper.Gameplay.Ball;
+using Sweeper.Gameplay.CameraEffects;
 using UnityEngine;
 
 namespace Sweeper.Gameplay.Bricks
@@ -18,6 +19,19 @@ namespace Sweeper.Gameplay.Bricks
         [SerializeField] private AudioClip destructionSound;
         [SerializeField, Range(0f, 1f)] private float destructionVolume = .75f;
         [SerializeField, Range(.5f, 2f)] private float destructionPitch = 1f;
+
+        [Header("Impact Camera Shake")]
+        [SerializeField, Min(0f)] private float impactShakeDuration = .06f;
+        [SerializeField, Min(0f)] private float impactShakeIntensity = .025f;
+
+        [Header("Destruction Camera Shake")]
+        [SerializeField, Min(0f)] private float destructionShakeDuration = .16f;
+        [SerializeField, Min(0f)] private float destructionShakeIntensity = .12f;
+
+        [Header("Dynamic Shake Scaling")]
+        [SerializeField, Min(.1f)] private float referenceBallSpeed = 12f;
+        [SerializeField, Min(0f)] private float intensityGrowthPerCollision = .08f;
+        [SerializeField, Min(1f)] private float maximumShakeMultiplier = 3f;
 
         private int _remainingHits;
         private bool _destroyRequested;
@@ -53,12 +67,19 @@ namespace Sweeper.Gameplay.Bricks
         private void OnCollisionEnter2D(Collision2D collision)
         {
             if (_destroyRequested ||
-                !collision.collider.TryGetComponent(out BallLauncher _))
+                !collision.collider.TryGetComponent(out BallLauncher ball))
                 return;
 
+            int collisionCount = ball.RegisterBrickCollision();
+            float shakeMultiplier = CalculateShakeMultiplier(
+                ball.Velocity.magnitude,
+                collisionCount);
             _remainingHits--;
             if (_remainingHits > 0)
             {
+                CameraShake.Play(
+                    impactShakeDuration,
+                    impactShakeIntensity * shakeMultiplier);
                 RefreshVisual();
                 return;
             }
@@ -70,7 +91,21 @@ namespace Sweeper.Gameplay.Bricks
                     : GeneratedDestructionSound,
                 destructionVolume,
                 destructionPitch);
+            CameraShake.Play(
+                destructionShakeDuration,
+                destructionShakeIntensity * shakeMultiplier);
             Destroy(gameObject);
+        }
+
+        private float CalculateShakeMultiplier(float ballSpeed, int collisionCount)
+        {
+            float speedMultiplier = ballSpeed / Mathf.Max(.1f, referenceBallSpeed);
+            float collisionMultiplier = 1f +
+                Mathf.Max(0, collisionCount - 1) * intensityGrowthPerCollision;
+            return Mathf.Clamp(
+                speedMultiplier * collisionMultiplier,
+                .1f,
+                Mathf.Max(1f, maximumShakeMultiplier));
         }
 
         private void RefreshVisual()

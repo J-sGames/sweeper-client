@@ -18,6 +18,7 @@ namespace Sweeper.Gameplay.Bricks
         [SerializeField, Min(.1f)] private float blockWidth = 1.05f;
         [SerializeField, Min(.1f)] private float blockHeight = .72f;
         [SerializeField, Min(0f)] private float horizontalGap = .08f;
+        [SerializeField, Min(0f)] private float verticalGap = .08f;
 
         [Header("Placement")]
         [SerializeField, Range(1, 12)] private int previewRowCount = 3;
@@ -160,6 +161,11 @@ namespace Sweeper.Gameplay.Bricks
             return (usableWidth - horizontalGap * (count - 1)) / count;
         }
 
+        public float CalculateFittedBlockHeight()
+        {
+            return Mathf.Max(.1f, blockHeight - verticalGap);
+        }
+
         public int CalculateBricksPerRow(int launchCount)
         {
             int maximum = CalculateBlockCount();
@@ -203,6 +209,7 @@ namespace Sweeper.Gameplay.Bricks
 
             int count = CalculateBlockCount();
             float fittedWidth = CalculateFittedBlockWidth();
+            float fittedHeight = CalculateFittedBlockHeight();
             float startX = playfield.InnerLeft + fittedWidth * .5f;
             // The first grid slot below the top wall always remains empty.
             float y = playfield.InnerTop - blockHeight * 1.5f;
@@ -221,13 +228,13 @@ namespace Sweeper.Gameplay.Bricks
                 brick.name = $"Brick {index + 1:00}";
                 brick.transform.position = position;
                 brick.Configure(
-                    new Vector2(fittedWidth, blockHeight),
+                    new Vector2(fittedWidth, fittedHeight),
                     blockColor,
                     _generation);
                 _totalSpawnedBrickCount++;
             }
 
-            TrySpawnPickup(row.transform, fittedWidth);
+            TrySpawnPickup(row.transform, fittedWidth, fittedHeight);
             EvaluateGameFailure();
             return row;
         }
@@ -277,12 +284,15 @@ namespace Sweeper.Gameplay.Bricks
             return occupied;
         }
 
-        private void TrySpawnPickup(Transform parent, float fittedBlockWidth)
+        private void TrySpawnPickup(
+            Transform parent,
+            float fittedBlockWidth,
+            float fittedBlockHeight)
         {
             if (ballCountPickupPrefab == null)
                 return;
 
-            float diameter = Mathf.Min(fittedBlockWidth, blockHeight) * .62f;
+            float diameter = Mathf.Min(fittedBlockWidth, fittedBlockHeight) * .62f;
             float radius = diameter * .5f;
             float minimumX = playfield.InnerLeft + radius;
             float maximumX = playfield.InnerRight - radius;
@@ -398,6 +408,7 @@ namespace Sweeper.Gameplay.Bricks
             gameOverLineWidth = Mathf.Max(.01f, gameOverLineWidth);
             startingBricksPerRow = Mathf.Max(1, startingBricksPerRow);
             launchesPerBlockIncrease = Mathf.Max(1, launchesPerBlockIncrease);
+            verticalGap = Mathf.Clamp(verticalGap, 0f, Mathf.Max(0f, blockHeight - .1f));
         }
 
         private void OnDrawGizmos()
@@ -407,6 +418,7 @@ namespace Sweeper.Gameplay.Bricks
 
             int count = CalculateBlockCount();
             float fittedWidth = CalculateFittedBlockWidth();
+            float fittedHeight = CalculateFittedBlockHeight();
             if (count <= 0 || fittedWidth <= 0f)
                 return;
 
@@ -427,7 +439,7 @@ namespace Sweeper.Gameplay.Bricks
 
                     Vector3 center = new(
                         startX + column * (fittedWidth + horizontalGap), y, 0f);
-                    Vector3 size = new(fittedWidth, blockHeight, .02f);
+                    Vector3 size = new(fittedWidth, fittedHeight, .02f);
                     Gizmos.color = fill;
                     Gizmos.DrawCube(center, size);
                     Gizmos.color = outline;

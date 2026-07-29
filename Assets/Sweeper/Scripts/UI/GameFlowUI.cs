@@ -13,10 +13,16 @@ namespace Sweeper.UI
 
         private static Font _font;
 
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-        private static void BuildMainMenuAfterSceneLoad()
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+        private static void RegisterSceneLoadedCallback()
         {
-            if (SceneManager.GetActiveScene().name != MainSceneName ||
+            SceneManager.sceneLoaded -= HandleSceneLoaded;
+            SceneManager.sceneLoaded += HandleSceneLoaded;
+        }
+
+        private static void HandleSceneLoaded(Scene scene, LoadSceneMode mode)
+        {
+            if (scene.name != MainSceneName ||
                 FindFirstObjectByType<GameFlowUI>() != null)
                 return;
 
@@ -198,7 +204,9 @@ namespace Sweeper.UI
 
             GameObject eventSystem = new("EventSystem");
             eventSystem.AddComponent<EventSystem>();
-            eventSystem.AddComponent<InputSystemUIInputModule>();
+            InputSystemUIInputModule inputModule =
+                eventSystem.AddComponent<InputSystemUIInputModule>();
+            inputModule.AssignDefaultActions();
         }
 
         private static Font RuntimeFont

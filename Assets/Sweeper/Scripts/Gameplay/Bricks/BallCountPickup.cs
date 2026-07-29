@@ -11,6 +11,11 @@ namespace Sweeper.Gameplay.Bricks
         [SerializeField, Min(1)] private int additionalBalls = 1;
         [SerializeField] private Color color = new(.25f, 1f, .55f, 1f);
 
+        [Header("Collection Audio")]
+        [SerializeField] private AudioClip collectionSound;
+        [SerializeField, Range(0f, 1f)] private float collectionVolume = .8f;
+        [SerializeField, Range(.5f, 2f)] private float collectionPitch = 1.25f;
+
         private BallVolleyController _volley;
         private bool _collected;
 
@@ -41,6 +46,10 @@ namespace Sweeper.Gameplay.Bricks
 
             _collected = true;
             _volley.QueueAdditionalBalls(additionalBalls);
+            BallCollisionAudioPool.Play(
+                collectionSound,
+                collectionVolume,
+                collectionPitch);
             Destroy(gameObject);
         }
 

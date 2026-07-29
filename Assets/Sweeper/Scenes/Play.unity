@@ -186,7 +186,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   minimumSwipe: 0.025
   maximumSwipe: 0.35
-  minimumUpwardDirection: 0.15
+  minimumUpwardDirection: 0.051
 --- !u!114 &1004
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -253,8 +253,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ballPrefab: {fileID: 11400000, guid: 2a17783532214c838ac0f938b24df1ea, type: 3}
-  ballCount: 1
-  ballSpacing: 0.55
+  ballCount: 100
+  ballSpacing: 0.87
   ballDiameter: 0.42
   minimumSpeed: 8
   maximumSpeed: 18
@@ -276,13 +276,14 @@ MonoBehaviour:
   blockWidth: 1.7
   blockHeight: 1
   horizontalGap: 0.1
-  verticalGap: 0.1
-  topPadding: 0.65
   previewRowCount: 3
-  brickFillProbability: 0.7
-  minimumBricksPerRow: 2
+  startingBricksPerRow: 2
+  launchesPerBlockIncrease: 50
   blockColor: {r: 0.95, g: 0.35, b: 0.2, a: 1}
   spawnOnStart: 1
+  maximumBrickRowCount: 8
+  gameOverLineWidth: 0.06
+  gameOverLineColor: {r: 1, g: 0.2, b: 0.2, a: 0.9}
   rewardPlacementAttempts: 24
   rewardBottomClearance: 1.2
 --- !u!1 &144512118

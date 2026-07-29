@@ -28,16 +28,24 @@ namespace Sweeper.Gameplay.Ball
         private int _nextBallIndex;
         private Vector2 _scheduledDirection;
         private float _scheduledSpeed;
-        private double _volleyStartTime;
-        private double _launchInterval;
+        private int _fixedStepsBetweenLaunches;
+        private int _fixedStepsUntilNextLaunch;
         private int _pendingAdditionalBalls;
+        private bool _isGameplayEnabled = true;
+        private int _launchCount;
 
-        public bool CanLaunch => !_isVolleyActive;
+        public bool CanLaunch => _isGameplayEnabled && !_isVolleyActive;
+        public int LaunchCount => _launchCount;
         public int BallCount => ballCount;
         public float BallSpacing => ballSpacing;
         public Vector2 LaunchPosition => _launchPosition;
         public int PendingAdditionalBalls => _pendingAdditionalBalls;
         public event Action VolleyCompleted;
+
+        public void SetGameplayEnabled(bool enabled)
+        {
+            _isGameplayEnabled = enabled;
+        }
 
         public void QueueAdditionalBalls(int amount)
         {
@@ -79,6 +87,7 @@ namespace Sweeper.Gameplay.Ball
 
         private void BeginVolley(Vector2 direction, float speed)
         {
+            _launchCount++;
             _isVolleyActive = true;
             _returnedCount = 0;
             _nextLaunchPosition = _launchPosition;
@@ -86,26 +95,29 @@ namespace Sweeper.Gameplay.Ball
 
             _scheduledDirection = direction.normalized;
             _scheduledSpeed = speed;
-            _launchInterval = ballSpacing / Mathf.Max(.01f, speed);
-            _volleyStartTime = Time.timeAsDouble;
+            float distancePerFixedStep =
+                Mathf.Max(.01f, speed) * Time.fixedDeltaTime;
+            _fixedStepsBetweenLaunches = Mathf.Max(
+                1,
+                Mathf.CeilToInt(ballSpacing / distancePerFixedStep));
+            _fixedStepsUntilNextLaunch = 0;
             _nextBallIndex = 0;
-            LaunchNextBall();
         }
 
-        private void Update()
+        private void FixedUpdate()
         {
             if (!_isVolleyActive || _nextBallIndex >= ballCount)
                 return;
 
-            // Absolute deadlines prevent frame overshoot from accumulating per ball.
-            while (_nextBallIndex < ballCount)
+            if (_fixedStepsUntilNextLaunch > 0)
             {
-                double targetTime = _volleyStartTime + _nextBallIndex * _launchInterval;
-                if (Time.timeAsDouble + 0.000001d < targetTime)
-                    break;
-
-                LaunchNextBall();
+                _fixedStepsUntilNextLaunch--;
+                if (_fixedStepsUntilNextLaunch > 0)
+                    return;
             }
+
+            LaunchNextBall();
+            _fixedStepsUntilNextLaunch = _fixedStepsBetweenLaunches;
         }
 
         private void LaunchNextBall()

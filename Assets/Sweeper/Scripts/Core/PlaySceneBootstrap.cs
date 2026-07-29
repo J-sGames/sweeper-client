@@ -1,6 +1,7 @@
 using Sweeper.Input;
 using Sweeper.Gameplay.Ball;
 using Sweeper.Gameplay.Board;
+using Sweeper.Gameplay.Bricks;
 using UnityEngine;
 
 namespace Sweeper.Core
@@ -9,6 +10,8 @@ namespace Sweeper.Core
     public sealed class PlaySceneBootstrap : MonoBehaviour
     {
         [SerializeField] private SwipeLaunchInput swipeInput;
+
+        private BrickRowSpawner _brickRowSpawner;
 
         private void Awake()
         {
@@ -23,6 +26,13 @@ namespace Sweeper.Core
             if (playfield != null)
                 playfield.FitCamera(playCamera);
             ConfigureVolley(playCamera, playfield);
+            ConfigureGameFailureCallback();
+        }
+
+        private void OnDestroy()
+        {
+            if (_brickRowSpawner != null)
+                _brickRowSpawner.GameFailed -= HandleGameFailed;
         }
 
         private static Camera ConfigureCamera()
@@ -58,6 +68,22 @@ namespace Sweeper.Core
             if (volley == null)
                 volley = gameObject.AddComponent<BallVolleyController>();
             volley.Configure(swipeInput, playCamera, initialPosition);
+        }
+
+        private void ConfigureGameFailureCallback()
+        {
+            _brickRowSpawner = GetComponent<BrickRowSpawner>();
+            if (_brickRowSpawner != null)
+                _brickRowSpawner.GameFailed += HandleGameFailed;
+        }
+
+        private void HandleGameFailed()
+        {
+            Debug.Log(
+                $"Game failed: a living brick crossed the game-over line. " +
+                $"Spawned bricks: {_brickRowSpawner.TotalSpawnedBrickCount}, " +
+                $"bricks remaining in scene: {_brickRowSpawner.CurrentSceneBrickCount}.",
+                this);
         }
     }
 }

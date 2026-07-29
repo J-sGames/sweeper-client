@@ -174,3 +174,4 @@ MonoBehaviour:
   fullVolumeImpactSpeed: 10
   soundCooldown: 0.035
   pitchVariation: 0.08
+  minimumVerticalSpeedRatio: 0.15

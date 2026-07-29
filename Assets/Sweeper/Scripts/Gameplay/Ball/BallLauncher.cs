@@ -22,6 +22,11 @@ namespace Sweeper.Gameplay.Ball
         [SerializeField, Min(0f)] private float soundCooldown = .035f;
         [SerializeField, Range(0f, .3f)] private float pitchVariation = .08f;
 
+        [Header("Trajectory Safety")]
+        [SerializeField, Range(.05f, .5f)] private float minimumVerticalSpeedRatio = .15f;
+
+        private float _flightSpeed;
+
         public event Action<BallLauncher, Vector2> ReturnRequested;
 
         public Vector2 LaunchWorldPosition => _launchWorldPosition;
@@ -66,6 +71,8 @@ namespace Sweeper.Gameplay.Ball
             if (!IsInFlight || _camera == null)
                 return;
 
+            CorrectNearHorizontalVelocity();
+
             Vector3 viewport = _camera.WorldToViewportPoint(_body.position);
             if (viewport.x < -.1f || viewport.x > 1.1f || viewport.y < -.1f || viewport.y > 1.1f)
                 RequestReturn(_body.position);
@@ -78,8 +85,31 @@ namespace Sweeper.Gameplay.Ball
             _body.simulated = true;
             _body.position = origin;
             _body.linearVelocity = direction.normalized * speed;
+            _flightSpeed = Mathf.Max(.01f, speed);
             _collider.enabled = true;
             IsInFlight = true;
+        }
+
+        private void CorrectNearHorizontalVelocity()
+        {
+            Vector2 velocity = _body.linearVelocity;
+            float speed = Mathf.Max(_flightSpeed, velocity.magnitude);
+            if (speed <= .01f ||
+                Mathf.Abs(velocity.y) >= speed * minimumVerticalSpeedRatio)
+                return;
+
+            float verticalSign = Mathf.Abs(velocity.y) > .001f
+                ? Mathf.Sign(velocity.y)
+                : 1f;
+            float horizontalSign = Mathf.Abs(velocity.x) > .001f
+                ? Mathf.Sign(velocity.x)
+                : 1f;
+            float verticalSpeed = speed * minimumVerticalSpeedRatio;
+            float horizontalSpeed = Mathf.Sqrt(
+                Mathf.Max(0f, speed * speed - verticalSpeed * verticalSpeed));
+            _body.linearVelocity = new Vector2(
+                horizontalSign * horizontalSpeed,
+                verticalSign * verticalSpeed);
         }
 
         public void EnterReturnZone(float x, float y)

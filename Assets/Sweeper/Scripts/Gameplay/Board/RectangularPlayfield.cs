@@ -19,6 +19,10 @@ namespace Sweeper.Gameplay.Board
         [SerializeField] private Color returnZoneColor = new(.12f, .75f, .7f, .18f);
 
         private static Sprite _whiteSprite;
+        private Camera _fittedCamera;
+        private int _lastScreenWidth;
+        private int _lastScreenHeight;
+
         public float FieldWidth =>
             Mathf.Max(1f, fieldHeight) * Mathf.Max(1f, aspectWidth) / Mathf.Max(1f, aspectHeight);
         public Vector2 FieldSize => new(FieldWidth, Mathf.Max(1f, fieldHeight));
@@ -40,9 +44,25 @@ namespace Sweeper.Gameplay.Board
             if (playCamera == null)
                 return;
 
+            _fittedCamera = playCamera;
+            _lastScreenWidth = Screen.width;
+            _lastScreenHeight = Screen.height;
             playCamera.orthographic = true;
-            playCamera.orthographicSize = FieldSize.y * .5f;
+            float screenAspect = Mathf.Max(.01f, playCamera.aspect);
+            float verticalSize = FieldSize.y * .5f;
+            float horizontalSize = FieldSize.x / (2f * screenAspect);
+            playCamera.orthographicSize = Mathf.Max(verticalSize, horizontalSize);
             playCamera.transform.position = new Vector3(fieldCenter.x, fieldCenter.y, -10f);
+        }
+
+        private void LateUpdate()
+        {
+            if (_fittedCamera == null ||
+                (_lastScreenWidth == Screen.width &&
+                 _lastScreenHeight == Screen.height))
+                return;
+
+            FitCamera(_fittedCamera);
         }
 
         private void Build()

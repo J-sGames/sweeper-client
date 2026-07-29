@@ -40,15 +40,16 @@ namespace Sweeper.UI
             CreateFullScreenImage(
                 canvas,
                 new Color(.035f, .055f, .09f, 1f));
+            RectTransform safeArea = CreateSafeArea(canvas);
             CreateText(
-                canvas,
+                safeArea,
                 "SWEEPER",
                 new Vector2(0f, 120f),
                 new Vector2(650f, 140f),
                 72,
                 FontStyle.Bold);
             CreateButton(
-                canvas,
+                safeArea,
                 "START GAME",
                 new Vector2(0f, -70f),
                 () => SceneManager.LoadScene(PlaySceneName));
@@ -62,20 +63,21 @@ namespace Sweeper.UI
             canvasComponent.sortingOrder = 100;
 
             CreateFullScreenImage(canvas, new Color(0f, 0f, 0f, .72f));
+            RectTransform safeArea = CreateSafeArea(canvas);
             CreateText(
-                canvas,
+                safeArea,
                 "GAME OVER",
                 new Vector2(0f, 150f),
                 new Vector2(650f, 120f),
                 64,
                 FontStyle.Bold);
             CreateButton(
-                canvas,
+                safeArea,
                 "RESTART",
                 new Vector2(0f, 0f),
                 () => SceneManager.LoadScene(PlaySceneName));
             CreateButton(
-                canvas,
+                safeArea,
                 "MAIN MENU",
                 new Vector2(0f, -115f),
                 () => SceneManager.LoadScene(MainSceneName));
@@ -113,6 +115,21 @@ namespace Sweeper.UI
             rect.offsetMin = Vector2.zero;
             rect.offsetMax = Vector2.zero;
             imageObject.GetComponent<Image>().color = color;
+        }
+
+        private static RectTransform CreateSafeArea(RectTransform parent)
+        {
+            GameObject safeAreaObject = new(
+                "Safe Area",
+                typeof(RectTransform),
+                typeof(SafeAreaFitter));
+            RectTransform rect = safeAreaObject.GetComponent<RectTransform>();
+            rect.SetParent(parent, false);
+            rect.anchorMin = Vector2.zero;
+            rect.anchorMax = Vector2.one;
+            rect.offsetMin = Vector2.zero;
+            rect.offsetMax = Vector2.zero;
+            return rect;
         }
 
         private static void CreateText(
@@ -192,6 +209,45 @@ namespace Sweeper.UI
                     _font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
                 return _font;
             }
+        }
+    }
+
+    public sealed class SafeAreaFitter : MonoBehaviour
+    {
+        private RectTransform _rectTransform;
+        private Rect _lastSafeArea;
+        private Vector2Int _lastScreenSize;
+
+        private void Awake()
+        {
+            _rectTransform = GetComponent<RectTransform>();
+            ApplySafeArea();
+        }
+
+        private void Update()
+        {
+            Vector2Int screenSize = new(Screen.width, Screen.height);
+            if (_lastSafeArea != Screen.safeArea ||
+                _lastScreenSize != screenSize)
+                ApplySafeArea();
+        }
+
+        private void ApplySafeArea()
+        {
+            if (_rectTransform == null || Screen.width <= 0 || Screen.height <= 0)
+                return;
+
+            Rect safeArea = Screen.safeArea;
+            _lastSafeArea = safeArea;
+            _lastScreenSize = new Vector2Int(Screen.width, Screen.height);
+            _rectTransform.anchorMin = new Vector2(
+                safeArea.xMin / Screen.width,
+                safeArea.yMin / Screen.height);
+            _rectTransform.anchorMax = new Vector2(
+                safeArea.xMax / Screen.width,
+                safeArea.yMax / Screen.height);
+            _rectTransform.offsetMin = Vector2.zero;
+            _rectTransform.offsetMax = Vector2.zero;
         }
     }
 }

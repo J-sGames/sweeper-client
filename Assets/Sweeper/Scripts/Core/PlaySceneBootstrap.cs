@@ -2,6 +2,7 @@ using Sweeper.Input;
 using Sweeper.Gameplay.Ball;
 using Sweeper.Gameplay.Board;
 using Sweeper.Gameplay.Bricks;
+using Sweeper.UI;
 using UnityEngine;
 
 namespace Sweeper.Core
@@ -84,6 +85,7 @@ namespace Sweeper.Core
                 $"Spawned bricks: {_brickRowSpawner.TotalSpawnedBrickCount}, " +
                 $"bricks remaining in scene: {_brickRowSpawner.CurrentSceneBrickCount}.",
                 this);
+            GameFlowUI.ShowGameOver();
         }
     }
 }

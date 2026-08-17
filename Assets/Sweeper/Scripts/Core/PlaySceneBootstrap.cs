@@ -13,6 +13,7 @@ namespace Sweeper.Core
         [SerializeField] private SwipeLaunchInput swipeInput;
 
         private BrickRowSpawner _brickRowSpawner;
+        [SerializeField] private GameComponentMap componentMap;
 
         private void Awake()
         {
@@ -21,12 +22,15 @@ namespace Sweeper.Core
 
             if (swipeInput == null)
                 swipeInput = GetComponent<SwipeLaunchInput>();
+            if (componentMap == null)
+                componentMap = GetComponent<GameComponentMap>();
 
             Camera playCamera = ConfigureCamera();
             RectangularPlayfield playfield = GetComponent<RectangularPlayfield>();
             if (playfield != null)
                 playfield.FitCamera(playCamera);
             ConfigureVolley(playCamera, playfield);
+            componentMap?.Apply(GameState.Playing);
             ConfigureGameFailureCallback();
         }
 
@@ -85,7 +89,10 @@ namespace Sweeper.Core
                 $"Spawned bricks: {_brickRowSpawner.TotalSpawnedBrickCount}, " +
                 $"bricks remaining in scene: {_brickRowSpawner.CurrentSceneBrickCount}.",
                 this);
-            GameFlowUI.ShowGameOver();
+            if (componentMap != null)
+                componentMap.Apply(GameState.GameOver);
+            else
+                Debug.LogError("GameComponentMap is not assigned.", this);
         }
     }
 }

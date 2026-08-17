@@ -1,5 +1,6 @@
 using Sweeper.Gameplay.Ball;
 using Sweeper.Gameplay.CameraEffects;
+using Sweeper.Core;
 using UnityEngine;
 
 namespace Sweeper.Gameplay.Bricks
@@ -75,6 +76,7 @@ namespace Sweeper.Gameplay.Bricks
                 ball.Velocity.magnitude,
                 collisionCount);
             _remainingHits--;
+            GameScore.Instance?.RegisterBrickHit();
             if (_remainingHits > 0)
             {
                 CameraShake.Play(
@@ -85,6 +87,7 @@ namespace Sweeper.Gameplay.Bricks
             }
 
             _destroyRequested = true;
+            GameScore.Instance?.RegisterBrickDestroyed();
             BallCollisionAudioPool.Play(
                 destructionSound != null
                     ? destructionSound

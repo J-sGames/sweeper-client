@@ -6,4 +6,5 @@ public class ApiResult<T>
     public long StatusCode;
     public T Response;
     public string Error;
+    public string ErrorCode;
 }

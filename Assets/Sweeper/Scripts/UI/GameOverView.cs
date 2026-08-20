@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 using SweeperClient.DTOs;
+using Sweeper.Networking;
 
 namespace Sweeper.UI
 {

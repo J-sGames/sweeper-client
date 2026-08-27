@@ -135,14 +135,15 @@ UI
 | GET | `/api/auth/me` | 필요 | 없음 | `UserInfo` | `AuthManager` |
 | POST | `/api/auth/logout` | 없음 | `LogoutRequest` | `ApiErrorResponse` | `AuthManager` |
 | POST | `/api/result/achieve` | 현재 없음 | `ScoreRequest` | `ScoreResponse` | `GameOverView` |
+| GET | `/api/result/ranking?page={page}&pageSize={pageSize}` | 없음 | 없음 | `RankingPageResponse` | `RankingUI` |
 
-새로 전달된 아래 라우트는 아직 클라이언트에 연결되지 않았다.
+랭킹은 페이지 번호가 1부터 시작하며 현재 UI는 페이지당 10개를 요청한다.
 
 ```http
 GET /api/result/ranking?page={page}&pageSize={pageSize}
 ```
 
-응답 DTO, 인증 필요 여부, 페이지 번호의 시작값과 제한 범위가 확정되면 구현할 수 있다.
+응답의 `hasNext`로 다음 페이지 버튼을 활성화하고, 현재 페이지가 1보다 크면 이전 페이지 버튼을 활성화한다.
 
 ## 6. 게임 결과 등록의 별도 구조
 

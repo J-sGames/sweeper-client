@@ -72,7 +72,7 @@ Sweeper는 세로 화면에서 스와이프로 공을 발사해 벽돌을 제거
 
 상세한 API, 응답 envelope, 토큰 갱신 흐름은 [통신 구조 문서](Docs/NETWORKING.md)를 참고한다.
 
-새로 제공된 랭킹 라우트는 아직 UI와 DTO에 연결되지 않았다.
+모든 씬에서 유지되는 랭킹 버튼으로 페이지당 10개의 순위와 점수를 조회할 수 있다.
 
 ```http
 GET /api/result/ranking?page={page}&pageSize={pageSize}

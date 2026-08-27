@@ -6,16 +6,36 @@ namespace SweeperClient.DTOs
     [Serializable]
     public class ScoreRequest
     {
-        public string Name;
-        public int Score;
-        public string StartedTime;
-        public string EndedTime;
+        public string name;
+        public int score;
+        public string startedTime;
+        public string endedTime;
     }
 
     [Serializable]
     public class ScoreResponse
     {
-        public string Name;
-        public int Score;
+        public long id;
+        public int rank;
+        public string name;
+        public int score;
+    }
+
+    [Serializable]
+    public sealed class RankingPageResponse
+    {
+        public int page;
+        public int pageSize;
+        public bool hasNext;
+        public RankingItemResponse[] items;
+    }
+
+    [Serializable]
+    public sealed class RankingItemResponse
+    {
+        public int rank;
+        public string name;
+        public int score;
+        public string achievedAt;
     }
 }

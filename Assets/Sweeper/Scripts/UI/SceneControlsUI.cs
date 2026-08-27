@@ -42,6 +42,9 @@ namespace Sweeper.UI
 
         private void Update()
         {
+            if (GameOverView.IsSubmitting)
+                return;
+
             if (Keyboard.current?.escapeKey.wasPressedThisFrame != true)
                 return;
 

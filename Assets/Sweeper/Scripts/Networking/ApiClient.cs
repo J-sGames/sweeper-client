@@ -81,6 +81,7 @@ namespace Sweeper.Networking
         private UnityWebRequest CreateRequest(string path, string method, string json, bool authenticated)
         {
             UnityWebRequest request = new(_baseUrl + "/" + path.TrimStart('/'), method) { downloadHandler = new DownloadHandlerBuffer() };
+            request.SetRequestHeader("Accept", "application/json");
             if (json != null) { request.uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(json)); request.SetRequestHeader("Content-Type", "application/json"); }
             if (authenticated && !string.IsNullOrWhiteSpace(_tokens?.AccessToken)) request.SetRequestHeader("Authorization", "Bearer " + _tokens.AccessToken);
             return request;

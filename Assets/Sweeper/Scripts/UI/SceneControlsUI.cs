@@ -14,6 +14,7 @@ namespace Sweeper.UI
 
         private Button _mainMenuButton;
         private Button _settingsButton;
+        private Button _quitButton;
         private GameObject _settingsPanel;
         private Slider _volumeSlider;
         private Toggle _muteToggle;
@@ -102,6 +103,15 @@ namespace Sweeper.UI
             SceneManager.LoadScene(GameFlowUI.MainSceneName);
         }
 
+        private static void QuitGame()
+        {
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+#else
+            Application.Quit();
+#endif
+        }
+
         private void LoadAudioSettings()
         {
             float volume = Mathf.Clamp01(PlayerPrefs.GetFloat(VolumePrefsKey, DefaultVolume));
@@ -154,9 +164,13 @@ namespace Sweeper.UI
             AnchorTopRight(_settingsButton.GetComponent<RectTransform>());
             _settingsButton.onClick.AddListener(OpenSettings);
 
-            _mainMenuButton = CreateButton(safeArea, "Main Menu Button", "메인 메뉴", new Vector2(-155f, -180f));
+            _mainMenuButton = CreateButton(safeArea, "Main Menu Button", "메인 메뉴", new Vector2(-155f, -280f));
             AnchorTopRight(_mainMenuButton.GetComponent<RectTransform>());
             _mainMenuButton.onClick.AddListener(ReturnToMainMenu);
+
+            _quitButton = CreateButton(safeArea, "Quit Button", "게임 종료", new Vector2(-155f, -180f));
+            AnchorTopRight(_quitButton.GetComponent<RectTransform>());
+            _quitButton.onClick.AddListener(QuitGame);
 
             RectTransform overlay = CreateRect("Settings Overlay", canvasRect);
             Stretch(overlay);
